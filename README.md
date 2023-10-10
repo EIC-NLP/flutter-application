@@ -1,4 +1,4 @@
-# rbc_interface
+# rbc-user-interface-application
 
 A new Flutter project.
 
