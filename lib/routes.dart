@@ -2,37 +2,66 @@ import 'package:flutter/material.dart';
 import 'package:rbc_interface/src/features/landing_page/app/landing_page.dart';
 import 'package:rbc_interface/src/features/chat_box/app/chat_box.dart';
 import 'package:rbc_interface/src/features/transcription/app/transcription.dart';
+class Routes extends StatelessWidget {
+  final PageController _pageController = PageController(initialPage: 0);
 
-class AppRoutes {
-  static const String landingPage = '/';
-  static const String chatBox = '/chat_box';
-  static const String transcription = '/transcription';
-}
-
-class NavigatorHelper {
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case AppRoutes.landingPage:
-        return MaterialPageRoute(builder: (_) => LandingPage());
-      case AppRoutes.chatBox:
-        return MaterialPageRoute(builder: (_) => ChatBox());
-      case AppRoutes.transcription:
-        return MaterialPageRoute(builder: (_) => Transcription());
-      default:
-        return MaterialPageRoute(builder: (_) => UnknownRoutePage());
-    }
+  void _navigateToPage(int pageIndex) {
+    _pageController.animateToPage(
+      pageIndex,
+      duration: Duration(milliseconds: 500),
+      curve: Curves.ease,
+    );
   }
-}
 
-class UnknownRoutePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Unknown Route'),
+        title: Text("Sponsers Stuff Here"),
       ),
-      body: Center(
-        child: Text('404 - Page not found'),
+      body: Column(
+        children: [
+          Expanded(
+            child: PageView(
+              controller: _pageController,
+              children: [
+                LandingPage(),
+                ChatBox(),
+                Transcription(),
+              ],
+            ),
+          ),
+          Container(
+            color: Colors.blue,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: () => _navigateToPage(0),
+                  child: Text('Landing Page'),
+                ),
+                ElevatedButton(
+                  onPressed: () => _navigateToPage(1),
+                  child: Text('Chat Box'),
+                ),
+                ElevatedButton(
+                  onPressed: () => _navigateToPage(2),
+                  child: Text('Transcription'),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            color: Colors.lightBlue, // Different shade of blue
+            padding: EdgeInsets.all(16.0),
+            child: Center(
+              child: Text(
+                'Maybe more sponsers stuff here',
+                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
