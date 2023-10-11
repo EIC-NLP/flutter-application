@@ -17,6 +17,7 @@ class Routes extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.grey[800],
         title: Text("Sponsers Stuff Here"),
       ),
       body: Column(
@@ -32,21 +33,24 @@ class Routes extends StatelessWidget {
             ),
           ),
           Container(
-            color: Colors.blue,
+            color: Colors.grey[700],
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
+                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.grey[800])),
                   onPressed: () => _navigateToPage(0),
-                  child: Text('Landing Page'),
+                  child: Text('Landing Page', style: TextStyle(color: Colors.white)),
                 ),
                 ElevatedButton(
+                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.grey[800])), 
                   onPressed: () => _navigateToPage(1),
-                  child: Text('Chat Box'),
+                  child: Text('Chat Box', style: TextStyle(color: Colors.white)),
                 ),
                 ElevatedButton(
+                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all(Colors.grey[800])),
                   onPressed: () => _navigateToPage(2),
-                  child: Text('Transcription'),
+                  child: Text('Transcription', style: TextStyle(color: Colors.white)),
                 ),
               ],
             ),
