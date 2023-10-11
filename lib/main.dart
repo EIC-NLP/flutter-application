@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:rbc_interface/routes.dart';
-import 'package:rbc_interface/src/features/landing_page/app/landing_page.dart';
 void main() {
   runApp(MyApp());
 }

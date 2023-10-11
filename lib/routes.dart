@@ -51,16 +51,6 @@ class Routes extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            color: Colors.lightBlue, // Different shade of blue
-            padding: EdgeInsets.all(16.0),
-            child: Center(
-              child: Text(
-                'Maybe more sponsers stuff here',
-                style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
         ],
       ),
     );
