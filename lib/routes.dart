@@ -3,6 +3,7 @@ import 'package:rbc_interface/src/features/landing_page/app/landing_page.dart';
 import 'package:rbc_interface/src/features/chat_box/app/chat_box.dart';
 import 'package:rbc_interface/src/features/transcription/app/transcription.dart';
 class Routes extends StatelessWidget {
+  
   final PageController _pageController = PageController(initialPage: 0);
 
   void _navigateToPage(int pageIndex) {
