@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:rbc_interface/src/features/landing_page/app/landing_page.dart';
+import 'package:rbc_interface/routes.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
@@ -32,7 +32,7 @@ class _ChatBoxState extends State<ChatBox> {
   _inactiveTimer = Timer(Duration(seconds: 15), () {
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => LandingPage()),
+        MaterialPageRoute(builder: (context) => Routes()),
       );
     }
   });
