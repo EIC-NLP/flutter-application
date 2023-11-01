@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:rbc_interface/routes.dart';
+
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,7 +17,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Routes(),
+      home: Routes(
+        pageIndex: 0, // Replace with the initial page index
+        pageController: StreamController<int>.broadcast(), // Replace with your StreamController
+      ),
     );
   }
 }

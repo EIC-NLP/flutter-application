@@ -32,11 +32,14 @@ class _ChatBoxState extends State<ChatBox> {
   _inactiveTimer = Timer(Duration(seconds: 15), () {
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => Routes()),
+        MaterialPageRoute(builder: (context) => Routes(
+          pageIndex: 0, // Replace with the initial page index
+          pageController: StreamController<int>.broadcast(), // Replace with your StreamController
+        )),
       );
     }
   });
-  }
+}
 
 
   void _resetInactiveTimer() {

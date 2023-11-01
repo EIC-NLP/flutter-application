@@ -1,103 +1,81 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_channel/io.dart';
 import 'package:rbc_interface/src/features/landing_page/app/landing_page.dart';
 import 'package:rbc_interface/src/features/chat_box/app/chat_box.dart';
 import 'package:rbc_interface/src/features/transcription/app/transcription.dart';
 
 class Routes extends StatefulWidget {
+  final int pageIndex;
+  final StreamController<int> pageController;
+
+  Routes({required this.pageIndex, required this.pageController});
+
   @override
   _RoutesState createState() => _RoutesState();
 }
 
 class _RoutesState extends State<Routes> {
-  final PageController _pageController = PageController(initialPage: 0);
-    late final WebSocketChannel channel;
+  late WebSocket _socket;
+  String _currentPage = '';
 
   @override
   void initState() {
     super.initState();
+    _connectToWebSocket();
+  }
 
-    // Connect to the WebSocket server
-    channel = IOWebSocketChannel.connect('ws://127.0.0.1:5000/ws');
-
-    // Listen for incoming messages
-    channel.stream.listen((message) {
-      Map<String, dynamic> data = jsonDecode(message);
-      String page = data['page'];
-      _navigateToPageByName(page);
-    });
+  Future<void> _connectToWebSocket() async {
+    try {
+      _socket = await WebSocket.connect('ws://127.0.0.1:6969');
+      _socket.listen((data) {
+        final message = jsonDecode(data);
+        if (message['page'] != null) {
+          setState(() {
+            _currentPage = message['page'];
+          });
+        }
+      });
+    } catch (e) {
+      print('Error connecting to WebSocket server: $e');
+    }
   }
 
   @override
   void dispose() {
-    // Close the WebSocket connection when the widget is disposed
-    channel.sink.close();
+    _socket.close();
     super.dispose();
-  }
-
-  Future<void> sendControlData() async {
-    final Map<String, dynamic> jsonData = {
-      'page': 'chat',
-      'command': 'append',
-      'content': 'find me a bottle',
-    };
-
-    channel.sink.add(jsonEncode(jsonData));
-  }
-
-  void _navigateToPageByName(String pageName) {
-    int pageIndex;
-    switch (pageName) {
-      case 'idle':
-        pageIndex = 0;
-        break;
-      case 'llm':
-        pageIndex = 1;
-        break;
-      case 'transcription':
-        pageIndex = 2;
-        break;
-      default:
-        pageIndex = 0; // Default to Landing Page if pageName is not recognized
-        break;
-    }
-    _pageController.animateToPage(
-      pageIndex,
-      duration: Duration(milliseconds: 500),
-      curve: Curves.ease,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.grey[800],
-        title: Text("Sponsors Stuff Here"),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              children: [
-                LandingPage(),
-                ChatBox(),
-                Transcription(),
-              ],
+    int pageIndex = 0;
+
+    if (_currentPage == 'landing') {
+      pageIndex = 0;
+    } else if (_currentPage == 'chat') {
+      pageIndex = 1;
+    } else if (_currentPage == 'transcription') {
+      pageIndex = 2;
+    }
+
+    return StreamBuilder<int>(
+      initialData: widget.pageIndex,
+      stream: widget.pageController.stream,
+      builder: (context, snapshot) {
+        return IndexedStack(
+          index: pageIndex, // Use pageIndex instead of snapshot.data
+          children: [
+            LandingPage(),
+            ChatBox(),
+            Transcription(),
+            Center(
+              child: Text(_currentPage),
             ),
-          ),
-          ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.grey[800]),
-            ),
-            onPressed: sendControlData,
-            child: Text('Send Control Data', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
+          ],
+        );
+      },
     );
   }
 }

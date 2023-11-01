@@ -1,26 +1,32 @@
-from flask import Flask
-from flask_sockets import Sockets
-import json
+from flask import Flask, jsonify, request
+from flask_socketio import SocketIO, emit
+from flask_cors import CORS
 
 app = Flask(__name__)
-sockets = Sockets(app)
+socketio = SocketIO(app, cors_allowed_origins='*')
+cors = CORS(app, resources={r"/data": {"origins": "*"}})
 
-@sockets.route('/ws')
-def ws_page(ws):
-    while True:
-        message = ws.receive()
-        if message:
-            data = json.loads(message)
-            if data['page'] in ['chat', 'transcription', 'landing']:
-                # Do some processing with the data
-                # For example, send it to all connected clients
-                # You can also send a message to a specific client using their WebSocket connection
-                ws.send(json.dumps({'message': 'Received your data!', 'page': data['page']}))
+@socketio.on('connect')
+def ws_page():
+    if socketio.connected:
+        print('Client connected')
+        emit('connected', {'data': 'Connected'})
+    else:
+        print('Client not connected')
+
+@socketio.on('disconnect')
+def ws_disconnect():
+    print('Client disconnected')
+
+@app.route('/data', methods=['POST'])
+def receive_data():
+    data = request.get_json()
+    if all(key in data for key in ['page', 'command', 'content']):
+        # Send the data to all connected clients via SocketIO
+        emit('data', {'page': data['page'], 'command': data['command'], 'content': data['content']}, broadcast=True, namespace='/data')
+        # Process the data as needed
+        # For example, you can save it to a database or perform some other action
+        return jsonify({'message': 'Received your data!', 'page': data['page'], 'command': data['command'], 'content': data['content']})
 
 if __name__ == '__main__':
-    from gevent import pywsgi
-    from geventwebsocket.handler import WebSocketHandler
-
-    server = pywsgi.WSGIServer(('127.0.0.1', 5000), app, handler_class=WebSocketHandler)
-    print('Server running...')
-    server.serve_forever()
+    app.run(debug=True, host='127.0.0.1', port=6969)
